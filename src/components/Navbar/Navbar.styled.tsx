@@ -152,3 +152,7 @@ export const DownloadButton = styled.a`
     font-size: 0.8rem;
   }
 `;
+
+export const FileInput = styled.input`
+  display: none;
+`;

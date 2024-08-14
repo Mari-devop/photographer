@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from '../../components/Navbar/Navbar';
+import CustomNavbar from '../../components/Navbar/Navbar';
 import Album from '../../components/Album/Album';
 import AddButton from '../../components/AddButton/AddButton';
 import Row from 'react-bootstrap/Row';
@@ -7,7 +7,7 @@ import Col from 'react-bootstrap/Col';
 import { HomeContainer } from './Home.styled';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
+import { useAuth } from '../../hooks/useAuth';
 type AlbumDetails = {
   id: number;
   albumName: string;
@@ -19,21 +19,14 @@ const Home = () => {
   const [albums, setAlbums] = useState<AlbumDetails[]>([]);
   const navigate = useNavigate();
   const userEmail = localStorage.getItem('email'); 
+  const { authToken, refreshToken } = useAuth();
 
-  useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    if (!token) {
-      navigate('/');  
-      return;
-    }
-
+useEffect(() => {
     const fetchAlbums = async () => {
       try {
-        const token = localStorage.getItem('authToken');
-    
         const response = await axios.get('https://photodrop-dawn-surf-6942.fly.dev/folders', {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${authToken}`,
           },
         });
 
@@ -42,7 +35,7 @@ const Home = () => {
             id: album.id,
             albumName: album.name,
             albumLocation: album.location,
-            albumDataPicker: userEmail || '',
+            albumDataPicker: localStorage.getItem('email') || '',
           }));
 
           setAlbums(formattedAlbums);
@@ -50,36 +43,19 @@ const Home = () => {
           throw new Error('Failed to fetch albums. Response data is not an array.');
         }
       } catch (error) {
-        if (axios.isAxiosError(error)) {
-          if (error.response?.status === 401) {
-            try {
-              const refreshResponse = await axios.post('https://photodrop-dawn-surf-6942.fly.dev/api/auth/refresh', {}, {
-                withCredentials: true, 
-              });
-
-              if (refreshResponse.status === 200) {
-                
-                localStorage.setItem('authToken', refreshResponse.data.token);
-                fetchAlbums(); 
-              } else {
-               
-                navigate('/');
-              }
-            } catch (refreshError) {
-              console.error('Error refreshing token:', refreshError);
-              navigate('/'); 
-            }
-          } else {
-            console.error('Error fetching albums:', error.message);
-          }
+        if (axios.isAxiosError(error) && error.response?.status === 401) {
+          await refreshToken();
+          fetchAlbums(); // Retry after refreshing the token
         } else {
-          console.error('Unexpected error:', error);
+          console.error('Error fetching albums:', error);
         }
       }
     };
 
-    fetchAlbums();
-  }, [navigate, userEmail]);
+    if (authToken) {
+      fetchAlbums();
+    }
+  }, [authToken, refreshToken]);
 
   const handleSaveAlbum = async (albumDetails: Omit<AlbumDetails, 'id'>) => {
     try {
@@ -131,7 +107,7 @@ const Home = () => {
 
   return (
     <div>
-      <Navbar />
+      <CustomNavbar />
       <HomeContainer>
         <Row className="g-5">
           <Col xs={12} sm={11} md={6} lg={4} xl={4}>
@@ -140,6 +116,7 @@ const Home = () => {
           {albums.map((album, index) => (
             <Col key={index} xs={12} sm={11} md={6} lg={4} xl={4}>
               <Album
+                id={album.id} 
                 albumName={album.albumName}
                 albumLocation={album.albumLocation}
                 albumDataPicker={album.albumDataPicker}

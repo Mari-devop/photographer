@@ -10,18 +10,19 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PersonIcon from '@mui/icons-material/Person';
 
 export type AlbumProps = {
+  id: number;
   albumName: string;
   albumLocation: string;
   albumDataPicker: string;
   onDelete: () => void;
 };
 
-const Album = ({ albumName, albumLocation, albumDataPicker, onDelete }: AlbumProps) => {
+const Album = ({ id, albumName, albumLocation, albumDataPicker, onDelete }: AlbumProps) => {
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
 
   const handleNavigate = () => {
-    navigate(`/collection`);
+    navigate(`/collection/${id}`);
   };
 
   const handleShow = () => setShow(true);

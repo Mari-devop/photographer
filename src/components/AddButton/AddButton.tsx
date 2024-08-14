@@ -16,11 +16,15 @@ type AddButtonProps = {
 
 const AddButton = ({ onSave }: AddButtonProps) => {
   const [show, setShow] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleShow = () => setShow(true);
   const handleClose = () => setShow(false);
 
   const handleSave = async (albumDetails: Omit<AlbumDetails, 'id'>) => {
+    if (isSaving) return;
+    setIsSaving(true);
+
     try {
       const token = localStorage.getItem('authToken');
       const response = await axios.post(
@@ -35,26 +39,32 @@ const AddButton = ({ onSave }: AddButtonProps) => {
             'Content-Type': 'application/json',
           },  
         }
-      )
-      const newAlbum ={
+      );
+      
+      const newAlbum = {
         id: response.data.id,
         albumName: response.data.name,
         albumLocation: response.data.location,
-        albumDataPicker: response.data.albumDataPicker,
+        albumDataPicker: albumDetails.albumDataPicker,
       };
 
-      onSave(newAlbum);
       setShow(false);
-      } catch (error) {
-        console.error('Error during save:', error);
-      }
+    } catch (error) {
+      console.error('Error during save:', error);
+    } finally {
+      setIsSaving(false);
     }
-  
+  };
 
   return (
     <Container>
       <Button onClick={handleShow} />
-      <Modal show={show} handleClose={handleClose} handleSave={handleSave} />
+      <Modal 
+        show={show} 
+        handleClose={handleClose} 
+        handleSave={handleSave} 
+        disableSaveButton={isSaving} 
+      />
     </Container>
   );
 };

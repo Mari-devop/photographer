@@ -1,31 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { FileInput, Gallery, ImageWrapper, Image } from './AddCollection.styled';
+import React from 'react';
+import { Gallery, ImageWrapper, Image } from './AddCollection.styled';
+import { ImageData } from '../../types';
 
 type AddCollectionProps = {
   albumId: string;
+  images: ImageData[];
 };
 
-const AddCollection: React.FC<AddCollectionProps> = ({ albumId }) => {
-  const [images, setImages] = useState<string[]>([]);
-
-  useEffect(() => {
-    const savedAlbums = localStorage.getItem('albums');
-    if (savedAlbums) {
-      const albums = JSON.parse(savedAlbums);
-      const album = albums.find((album: { id: string }) => album.id === albumId);
-      if (album && album.images) {
-        setImages(album.images);
-      }
-    }
-  }, [albumId]);
-
+const AddCollection: React.FC<AddCollectionProps> = ({ images }) => {
   return (
     <div>
-      <FileInput type="file" multiple />
       <Gallery>
         {images.map((image, index) => (
           <ImageWrapper key={index}>
-            <Image src={image} alt={`uploaded ${index}`} />
+            <Image src={image.base64} alt={`uploaded ${index}`} />
           </ImageWrapper>
         ))}
       </Gallery>

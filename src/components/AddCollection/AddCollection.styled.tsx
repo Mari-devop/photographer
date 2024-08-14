@@ -1,9 +1,5 @@
 import styled from "styled-components";
 
-export const FileInput = styled.input`
-  display: none;
-`;
-
 export const Gallery = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
