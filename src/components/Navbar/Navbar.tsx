@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import NavDropdown from "react-bootstrap/NavDropdown";
@@ -23,9 +23,17 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({
   albumId,
   onImageUpdated,
 }) => {
+  const [username, setUsername] = useState<string | null>(null); 
   const location = useLocation();
-  const showUploadButton = location.pathname.startsWith("/collection");
   const navigate = useNavigate();
+  const showUploadButton = location.pathname.startsWith("/collection");
+
+  useEffect(() => {
+    const storedUsername = localStorage.getItem("email");
+    if (storedUsername) {
+      setUsername(storedUsername);
+    }
+  }, []); 
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -34,13 +42,11 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({
     if (files && files.length > 0 && albumId) {
       const formData = new FormData();
   
-      Array.from(files).forEach((file, index) => {
-        console.log(`Appending file: ${file.name}, size: ${file.size}`);
+      Array.from(files).forEach((file) => {
         formData.append("images", file);
       });
   
       try {
-        console.log("Uploading photos...", formData);
         const response = await axios.post(
           `https://photodrop-dawn-surf-6942.fly.dev/folders/${albumId}/images`,
           formData,
@@ -53,7 +59,6 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({
         );
   
         if (response.status === 200 || response.status === 201) {
-          console.log("Photos uploaded successfully");
           if (onImageUpdated) onImageUpdated();
         } else {
           console.error("Failed to upload photos:", response.statusText);
@@ -73,10 +78,8 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({
 
   const handleClick = () => {
     const token = localStorage.getItem("authToken");
-    console.log("Token before navigating to home:", token);
 
     if (!token) {
-      console.error("No token found, redirecting to login.");
       navigate("/");
     } else {
       console.log("Token is valid, navigating to home.");
@@ -86,6 +89,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
+    localStorage.removeItem("email"); 
     navigate("/");
   };
 
@@ -111,7 +115,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({
             )}
             <CustomNavDropdown
               id="nav-dropdown-dark-example"
-              title="Sign in as: User"
+              title={username ? `${username}` : "Sign in as: User"}
             >
               <CustomItem onClick={handleClick}>Albums</CustomItem>
               <NavDropdown.Divider />

@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaTrash, FaLink } from 'react-icons/fa';
-import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import { AlbumContainer, CardContainer, Image, Header, Title, Text, IconWrapper } from './Album.styled';
-import logo from '../../assets/images/chher.png';
+import { AlbumContainer, CardContainer, Header, Title, Text, IconWrapper, CardBody } from './Album.styled';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PersonIcon from '@mui/icons-material/Person';
+import { PiFolderOpenThin } from "react-icons/pi";
 
 export type AlbumProps = {
   id: number;
@@ -41,13 +40,13 @@ const Album = ({ id, albumName, albumLocation, albumDataPicker, onDelete }: Albu
       </IconWrapper>
       <CardContainer>
         <Header>
-          <Image variant="top" src={logo} />
+          <PiFolderOpenThin style={{ width: '100px', height: '100px', fill: '#ff6a00' }} />
           <Title>{albumName}</Title>
         </Header>
-        <Card.Body>
+        <CardBody>
           <Text><LocationOnIcon />{albumLocation}</Text>
           <Text><PersonIcon />{albumDataPicker}</Text>
-        </Card.Body>
+        </CardBody>
       </CardContainer>
 
       <Modal

@@ -23,7 +23,7 @@ export const AlbumContainer = styled.div`
   &::before {
     content: '';
     position: absolute;
-    top: 0;
+    top: 50%;
     left: 0;
     width: 100%;
     height: 100%;
@@ -35,20 +35,24 @@ export const AlbumContainer = styled.div`
 
 export const IconWrapper = styled.div`
   position: absolute;
-  top: 80px;
-  right: 150px;
   display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 50%;
+  left: 50%;
   gap: 50px;
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
   z-index: 3;
   pointer-events: none;
+  transform: translate(-50%, calc(50% + 50%)); 
 `;
+
 
 export const Header = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
   padding: 10px;
   margin-top: 10px;
@@ -58,7 +62,6 @@ export const Title = styled(Card.Title)`
   text-align: center;
   color: var(--dark-color);
   margin: 0;
-  flex: 1;
   min-width: 0;
 `;
 
@@ -68,11 +71,8 @@ export const CardContainer = styled(Card)`
   border: none;
 `;
 
-export const Image = styled(Card.Img)`
-  width: 100px;
-  height: 100px;
-  flex-shrink: 0; 
-  border-radius: 50%;
+export const CardBody = styled(Card.Body)`
+  padding: 20px 50px;
 `;
 
 export const Text = styled(Card.Text)`

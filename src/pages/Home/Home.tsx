@@ -5,9 +5,9 @@ import AddButton from '../../components/AddButton/AddButton';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { HomeContainer } from './Home.styled';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../hooks/useAuth';
+
 type AlbumDetails = {
   id: number;
   albumName: string;
@@ -17,7 +17,6 @@ type AlbumDetails = {
 
 const Home = () => {
   const [albums, setAlbums] = useState<AlbumDetails[]>([]);
-  const navigate = useNavigate();
   const userEmail = localStorage.getItem('email'); 
   const { authToken, refreshToken } = useAuth();
 
@@ -45,7 +44,7 @@ useEffect(() => {
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 401) {
           await refreshToken();
-          fetchAlbums(); // Retry after refreshing the token
+          fetchAlbums(); 
         } else {
           console.error('Error fetching albums:', error);
         }
@@ -60,7 +59,6 @@ useEffect(() => {
   const handleSaveAlbum = async (albumDetails: Omit<AlbumDetails, 'id'>) => {
     try {
       const token = localStorage.getItem('authToken');
-
       const response = await axios.post(
         'https://photodrop-dawn-surf-6942.fly.dev/folders',
         {
@@ -97,7 +95,6 @@ useEffect(() => {
             Authorization: `Bearer ${token}`,
           },
         });
-
       setAlbums((prevAlbums) => prevAlbums.filter(album => album.id !== id));
     } catch (error) {
       console.error('Error deleting album:', error);

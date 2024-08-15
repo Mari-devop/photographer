@@ -16,6 +16,12 @@ export const ContainerWrapper = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
+
+  @media (max-width: 576px) {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
 `;
 
 export const BrandWrapper = styled.div`
@@ -74,15 +80,12 @@ export const CustomNavDropdown = styled(NavDropdown)`
   }
 
   .dropdown-menu {
-    min-width: 150px !important; 
+    min-width: 120px !important; 
   }
 
   @media (max-width: 500px) {
     font-size: 0.8rem;
     padding: 5px;
-    .dropdown-menu {
-        min-width: 120px !important; 
-      }
   }
 
   @media (max-width: 379px) {
@@ -127,10 +130,10 @@ export const CollapseWrapper = styled.div`
     flex-grow: 0;
   }
 
-  @media (max-width: 500px) {
-    justify-content: space-between;
-
-  }
+   @media (max-width: 576px) {
+    margin-top: 15px;
+    justify-content: space-around;
+   }
 `;
 
 export const DownloadButton = styled.a`
@@ -147,9 +150,17 @@ export const DownloadButton = styled.a`
     color: white;
   }
 
-  @media (max-width: 500px) {
+  @media (max-width: 523px) {
     padding: 3px 5px;
     font-size: 0.8rem;
+    text-align: center;
+     margin: 5px;
+  }
+
+  @media (max-width: 414px) {
+    padding: 4px 6px;
+    font-size: 0.7rem;
+  
   }
 `;
 

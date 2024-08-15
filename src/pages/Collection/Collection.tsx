@@ -59,14 +59,39 @@ const Collection = () => {
     }
   };
 
+  const deleteImages = async (ids: number[]) => {
+    const token = localStorage.getItem('authToken');
+    try {
+      const response = await axios.delete('https://photodrop-dawn-surf-6942.fly.dev/images', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        data: { ids }, 
+      });
+
+      if (response.status === 200) {
+        setImages(prevImages => prevImages.filter(image => !ids.includes(image.id)));
+      } else {
+        console.error('Failed to delete images:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error deleting images:', error);
+    }
+  };
+
   useEffect(() => {
     fetchImages();
   }, [albumId]);
 
+  const handleDeleteImage = (id: number) => {
+    deleteImages([id]);
+  };
+
   return (
     <div>
       <CustomNavbar albumId={albumId} onImageUpdated={fetchImages} />
-      {albumId && <AddCollection albumId={albumId} images={images} />}
+      {albumId && <AddCollection albumId={albumId} images={images} onDeleteImage={handleDeleteImage} />}
     </div>
   );
 };
