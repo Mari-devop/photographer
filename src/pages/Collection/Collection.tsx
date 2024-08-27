@@ -5,6 +5,19 @@ import AddCollection from '../../components/AddCollection/AddCollection';
 import axios from 'axios';
 import { ImageData } from '../../types';
 
+
+const arrayBufferToBase64 = (buffer: ArrayBuffer) => {
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  const len = bytes.byteLength;
+  for (let i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return window.btoa(binary);
+};
+
+
+
 const Collection = () => {
   const { id: albumId } = useParams<{ id: string }>();
   const [images, setImages] = useState<ImageData[]>([]);
@@ -17,39 +30,53 @@ const Collection = () => {
         const response = await axios.get(`https://photodrop-dawn-surf-6942.fly.dev/folders/${albumId}/images`, {
           headers: {
             Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
           },
         });
 
-        if (response.status === 200 && Array.isArray(response.data.images)) {
-          const fetchedImages = await Promise.all(response.data.images.map(async (image: any) => {
-            try {
-              const imageResponse = await axios.get(`https://photodrop-dawn-surf-6942.fly.dev/folders/images/${image.id}`, {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              });
+        console.log('Server response:', response);
 
-              if (imageResponse.status === 200 && imageResponse.data.images.base64Data) {
-                return {
-                  id: image.id,
-                  name: image.name,
-                  type: image.type,
-                  base64: `data:${image.type};base64,${imageResponse.data.images.base64Data}`,
-                };
-              } else {
-                console.error(`Failed to fetch image content for image ID: ${image.id}. Data might be incomplete.`);
-                return null;
-              }
-            } catch (error) {
-              console.error(`Error fetching image content for image ID: ${image.id}`, error);
-              return null;
-            }
-          }));
+        if (response.status === 200) {
+          const data = response.data;
 
-          const validImages = fetchedImages.filter(Boolean) as ImageData[];
-          setImages(validImages);
+          console.log('Parsed data:', data);
+
+          if (Array.isArray(data.images)) {
+            const fetchImage = await Promise.all(
+              data.images.map(async (image: any) => {
+                console.log('Image object:', image);
+
+                const imageResponse = await axios.get(`https://photodrop-dawn-surf-6942.fly.dev/folders/images/${image.id}`, {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                  },
+          
+                });
+
+                if (imageResponse.status === 200 && imageResponse.data) {
+
+                  const imageSrc = `data:image/jpeg;base64,${arrayBufferToBase64(imageResponse.data.imageInfo.imageData.data)}`;
+                    
+                  return {
+                    id: image.id,
+                    name: image.name,
+                    type: image.type,
+                    binaryString: imageSrc,
+                  };
+                } else {
+                  console.error(`Failed to fetch image data for image ID: ${image.id}`);
+                  return null;
+                }
+              })
+            );
+
+            setImages(fetchImage.filter(Boolean));
+          } else {
+            console.error('Failed to fetch images. Response data is not an array.');
+          }
         } else {
-          console.error('Failed to fetch images. Response data is not an array.');
+          console.error('Failed to fetch images. Server responded with:', response.status);
         }
       } catch (error) {
         console.error('Error fetching images:', error);
@@ -67,7 +94,7 @@ const Collection = () => {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        data: { ids }, 
+        data: { ids },
       });
 
       if (response.status === 200) {

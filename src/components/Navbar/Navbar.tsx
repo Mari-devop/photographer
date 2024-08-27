@@ -40,41 +40,44 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({
     const token = localStorage.getItem("authToken");
   
     if (files && files.length > 0 && albumId) {
-      const formData = new FormData();
-  
-      Array.from(files).forEach((file) => {
-        formData.append("images", file);
-      });
-  
       try {
+        const formData = new FormData();
+
+        for (const file of Array.from(files)) {
+          const arrayBuffer = await file.arrayBuffer();
+          const blob = new Blob([arrayBuffer], { type: file.type });
+          formData.append("images", blob, file.name); 
+        }
+
         const response = await axios.post(
           `https://photodrop-dawn-surf-6942.fly.dev/folders/${albumId}/images`,
           formData,
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              "Content-Type": "multipart/form-data",
+              "Content-Type": "multipart/form-data", 
             },
           }
         );
-  
+       
         if (response.status === 200 || response.status === 201) {
           if (onImageUpdated) onImageUpdated();
         } else {
-          console.error("Failed to upload photos:", response.statusText);
+          console.error("Failed to upload photo:", response.statusText);
         }
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          console.error(
-            "Error uploading photos:",
-            error.response?.data || error.message
-          );
-        } else {
-          console.error("Unexpected error:", error);
-        }
+        } catch (error) {
+          if (axios.isAxiosError(error)) {
+            console.error(
+              "Error uploading photos:",
+              error.response?.data || error.message
+            );
+          } else {
+            console.error("Unexpected error:", error);
+          }
       }
     }
   };
+  
 
   const handleClick = () => {
     const token = localStorage.getItem("authToken");
