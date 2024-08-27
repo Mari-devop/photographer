@@ -54,7 +54,7 @@ useEffect(() => {
     if (authToken) {
       fetchAlbums();
     }
-  }, [authToken, refreshToken]);
+  }, [authToken]);
 
   const handleSaveAlbum = async (albumDetails: Omit<AlbumDetails, 'id'>) => {
     try {
