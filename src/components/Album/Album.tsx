@@ -12,11 +12,10 @@ export type AlbumProps = {
   id: number;
   albumName: string;
   albumLocation: string;
-  albumDataPicker: string;
   onDelete: () => void;
 };
 
-const Album = ({ id, albumName, albumLocation, albumDataPicker, onDelete }: AlbumProps) => {
+const Album = ({ id, albumName, albumLocation, onDelete }: AlbumProps) => {
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
 
@@ -45,7 +44,6 @@ const Album = ({ id, albumName, albumLocation, albumDataPicker, onDelete }: Albu
         </Header>
         <CardBody>
           <Text><LocationOnIcon />{albumLocation}</Text>
-          <Text><PersonIcon />{albumDataPicker}</Text>
         </CardBody>
       </CardContainer>
 

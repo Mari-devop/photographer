@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import InputGroup from 'react-bootstrap/InputGroup';
+import Modal from 'react-bootstrap/Modal';
 import { LoginContainer, StyledRow, StyledInputGroup, StyledFormControl, Button } from './Login.styled';
 
 type LoginProps = {
@@ -10,6 +11,7 @@ type LoginProps = {
 const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showError, setShowError] = useState(false); 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,7 +20,7 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
       setIsAuthenticated(true);
     }
   }, [setIsAuthenticated]);
-  
+
   const handleLogin = async () => {
     const loginData = {
       username: email,
@@ -36,15 +38,16 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
 
       if (response.ok) {
         const data = await response.json();
-        localStorage.setItem('authToken', data.token);  
+        localStorage.setItem('authToken', data.token);
         localStorage.setItem('email', email);
         setIsAuthenticated(true);
         navigate('/home');
       } else {
-        console.error('Login failed');
+        setShowError(true); 
       }
     } catch (error) {
       console.error('Error during login:', error);
+      setShowError(true); 
     }
   };
 
@@ -78,6 +81,21 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
       <StyledRow>
         <Button onClick={handleLogin}>Login</Button>
       </StyledRow>
+
+
+      <Modal show={showError} onHide={() => setShowError(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Login Error</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Email or password is incorrect. Please try again.
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={() => setShowError(false)}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </LoginContainer>
   );
 };

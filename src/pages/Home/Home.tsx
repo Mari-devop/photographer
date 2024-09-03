@@ -12,15 +12,14 @@ type AlbumDetails = {
   id: number;
   albumName: string;
   albumLocation: string;
-  albumDataPicker: string;
 };
 
 const Home = () => {
   const [albums, setAlbums] = useState<AlbumDetails[]>([]);
-  const userEmail = localStorage.getItem('email'); 
+  const [isFetched, setIsFetched] = useState(false); 
   const { authToken, refreshToken } = useAuth();
 
-useEffect(() => {
+  useEffect(() => {
     const fetchAlbums = async () => {
       try {
         const response = await axios.get('https://photodrop-dawn-surf-6942.fly.dev/folders', {
@@ -34,10 +33,12 @@ useEffect(() => {
             id: album.id,
             albumName: album.name,
             albumLocation: album.location,
-            albumDataPicker: localStorage.getItem('email') || '',
+            dataPicker: album.dataPicker, 
+            date: album.date,  
           }));
 
           setAlbums(formattedAlbums);
+          setIsFetched(true); 
         } else {
           throw new Error('Failed to fetch albums. Response data is not an array.');
         }
@@ -51,12 +52,12 @@ useEffect(() => {
       }
     };
 
-    if (authToken) {
+    if (authToken && !isFetched) {
       fetchAlbums();
     }
-  }, [authToken]);
+  }, [authToken, refreshToken, isFetched]); 
 
-  const handleSaveAlbum = async (albumDetails: Omit<AlbumDetails, 'id'>) => {
+  const handleSaveAlbum = async (albumDetails: AlbumDetails) => {
     try {
       const token = localStorage.getItem('authToken');
       const response = await axios.post(
@@ -77,7 +78,6 @@ useEffect(() => {
         id: response.data.id,
         albumName: response.data.name,
         albumLocation: response.data.location,
-        albumDataPicker: userEmail || '',
       };
 
       setAlbums((prevAlbums) => [...prevAlbums, newAlbum]);
@@ -116,7 +116,6 @@ useEffect(() => {
                 id={album.id} 
                 albumName={album.albumName}
                 albumLocation={album.albumLocation}
-                albumDataPicker={album.albumDataPicker}
                 onDelete={() => handleDeleteAlbum(album.id)}
               />
             </Col>

@@ -7,7 +7,6 @@ type AlbumDetails = {
   id: number;
   albumName: string;
   albumLocation: string;
-  albumDataPicker: string;
 };
 
 type AddButtonProps = {
@@ -24,7 +23,7 @@ const AddButton = ({ onSave }: AddButtonProps) => {
   const handleSave = async (albumDetails: Omit<AlbumDetails, 'id'>) => {
     if (isSaving) return;
     setIsSaving(true);
-
+  
     try {
       const token = localStorage.getItem('authToken');
       const response = await axios.post(
@@ -40,21 +39,27 @@ const AddButton = ({ onSave }: AddButtonProps) => {
           },  
         }
       );
-      
+  
       const newAlbum = {
         id: response.data.id,
         albumName: response.data.name,
         albumLocation: response.data.location,
-        albumDataPicker: albumDetails.albumDataPicker,
       };
-
+  
+      onSave(newAlbum);
       setShow(false);
-    } catch (error) {
-      console.error('Error during save:', error);
+    } catch (error: any) {
+      if (error.response && error.response.data && error.response.data.error) {
+        alert(error.response.data.error); 
+      } else {
+        console.error('Error during save:', error);
+        alert('An error occurred while saving the album. Please try again.');
+      }
     } finally {
       setIsSaving(false);
     }
   };
+  
 
   return (
     <Container>

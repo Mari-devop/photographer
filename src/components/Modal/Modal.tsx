@@ -6,7 +6,6 @@ import { Title, FormControl, FormLabel, CustomButton } from './Modal.styled';
 type AlbumDetails = {
   albumName: string;
   albumLocation: string;
-  albumDataPicker: string;
 };
 
 type CustomModalProps = {
@@ -19,14 +18,12 @@ type CustomModalProps = {
 const CustomModal = ({ show, handleClose, handleSave, disableSaveButton }: CustomModalProps) => {
   const [albumName, setAlbumName] = useState('');
   const [albumLocation, setAlbumLocation] = useState('');
-  const [albumDataPicker, setAlbumDataPicker] = useState('');
 
   const handleSaveClick = () => {
     if (albumName.trim()) {
       handleSave({
         albumName,
         albumLocation,
-        albumDataPicker,
       });
       handleClose(); 
     }
@@ -36,7 +33,6 @@ const CustomModal = ({ show, handleClose, handleSave, disableSaveButton }: Custo
     if (show) {
       setAlbumName(''); 
       setAlbumLocation('');
-      setAlbumDataPicker('');
     }
   }, [show]);
 
@@ -65,15 +61,6 @@ const CustomModal = ({ show, handleClose, handleSave, disableSaveButton }: Custo
                 value={albumLocation}
                 onChange={(e) => setAlbumLocation(e.target.value)}
                 placeholder="Notre Dame De Paris"
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <FormLabel>DataPicker</FormLabel>
-              <FormControl
-                type="text"
-                value={albumDataPicker}
-                onChange={(e) => setAlbumDataPicker(e.target.value)}
-                placeholder="Mr. Bean"
               />
             </Form.Group>
           </Form>
