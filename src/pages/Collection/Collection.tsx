@@ -56,8 +56,6 @@ const Collection = () => {
                     name: image.name,
                     type: image.type,
                     binaryString: imageSrc,
-                    dataPicker: image.dataPicker, 
-                    date: image.date, 
                   };
                 } else {
                   console.error(`Failed to fetch image data for image ID: ${image.id}`);

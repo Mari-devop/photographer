@@ -17,6 +17,13 @@ export const ContainerWrapper = styled.div`
   align-items: center;
   width: 100%;
 
+  @media (max-width: 761px) {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+  }
+
   @media (max-width: 576px) {
     flex-direction: column;
     justify-content: center;
@@ -130,10 +137,12 @@ export const CollapseWrapper = styled.div`
     flex-grow: 0;
   }
 
-   @media (max-width: 576px) {
+  @media (max-width: 597px) {
+    flex-direction: column;
     margin-top: 15px;
     justify-content: space-around;
-   }
+    gap: 10px;
+  }
 `;
 
 export const DownloadButton = styled.a`
@@ -160,10 +169,29 @@ export const DownloadButton = styled.a`
   @media (max-width: 414px) {
     padding: 4px 6px;
     font-size: 0.7rem;
-  
   }
 `;
 
 export const FileInput = styled.input`
   display: none;
+`;
+
+export const AlbumInfo = styled.div`
+  font-size: 18px;
+  color: var(--primary-color);
+  text-align: center;
+  margin-right: auto;
+  margin-left: auto;
+
+   @media (max-width: 761px) {
+      margin: 0 auto;
+   }
+`;
+
+export const Wrap = styled.div`
+  display: flex;
+  align-items: center;  
+  justify-content: center;
+  margin: 0 auto;
+  gap: 10px;
 `;

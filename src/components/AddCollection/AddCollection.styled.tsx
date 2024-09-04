@@ -20,25 +20,6 @@ export const ImageWrapper = styled.div`
     align-items: center;
     justify-content: center;
 
-    &:nth-child(3n) {
-        grid-row: span 2;
-    }
-
-    &:nth-child(2n) {
-        grid-column: span 2;
-        grid-row: span 3;
-    }
-
-     &:nth-child(4n) {
-        grid-column: span 2;
-        grid-row: span 3;
-    }
-
-    &:nth-child(5n) {
-        grid-column: span 1;
-        grid-row: span 3;
-    }
-
     &:hover .icon-wrapper {
         opacity: 1;
     }
@@ -59,34 +40,6 @@ export const ImageWrapper = styled.div`
     &:hover::after {
         opacity: 1;
     }
-
-    @media (max-width: 1920px) {
-         &:nth-child(1n) {
-            grid-column: span 1;
-        }
-    }
-
-    @media (max-width: 869px) {
-        &:nth-child(1n) {
-            grid-row: span 2;
-        }
-        &:nth-child(5n) {
-            grid-row: span 5;
-        }
-    }
-    @media (max-width: 550px) {
-        &:nth-child(3n) {
-            grid-row: span 1;
-        }
-
-        &:nth-child(2n) {
-            grid-column: span 1;
-        }
-
-         &:nth-child(5n) {
-            grid-row: span 5;
-        }
-    }
 `;
 
 export const Image = styled.img`
@@ -94,7 +47,6 @@ export const Image = styled.img`
   width: 100%;
   height: 100%;
 `;
-
 
 export const IconWrapper = styled.div`
   position: absolute;

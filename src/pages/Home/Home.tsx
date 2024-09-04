@@ -4,7 +4,7 @@ import Album from '../../components/Album/Album';
 import AddButton from '../../components/AddButton/AddButton';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { HomeContainer } from './Home.styled';
+import { HomeContainer, LinkStyled } from './Home.styled';
 import axios from 'axios';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -112,12 +112,19 @@ const Home = () => {
           </Col>
           {albums.map((album, index) => (
             <Col key={index} xs={12} sm={11} md={6} lg={4} xl={4}>
+               <LinkStyled
+                  to={{
+                    pathname: `/collection/${album.id}`,
+                  }}
+                  state={{ albumName: album.albumName, albumLocation: album.albumLocation }}
+                >
               <Album
                 id={album.id} 
                 albumName={album.albumName}
                 albumLocation={album.albumLocation}
                 onDelete={() => handleDeleteAlbum(album.id)}
               />
+              </LinkStyled>
             </Col>
           ))}
         </Row>

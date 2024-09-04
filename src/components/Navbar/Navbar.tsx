@@ -4,6 +4,7 @@ import Container from "react-bootstrap/Container";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import { Spinner } from 'react-bootstrap';
 import {
   NavbarContainer,
   ContainerWrapper,
@@ -13,6 +14,8 @@ import {
   CustomNavDropdown,
   CustomItem,
   DownloadButton,
+  AlbumInfo,
+  Wrap
 } from "./Navbar.styled";
 import axios from "axios";
 import UploadPhotosModal from '../UploadPhotosModal/UploadPhotosModal'; 
@@ -28,12 +31,15 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({
 }) => {
   const [username, setUsername] = useState<string | null>(null); 
   const [showModal, setShowModal] = useState(false); 
-  const [showUploadCompleteModal, setShowUploadCompleteModal] = useState(false); // Новое состояние
+  const [showUploadCompleteModal, setShowUploadCompleteModal] = useState(false); 
   const [dataPicker, setDataPicker] = useState(''); 
+  const [isLoading, setIsLoading] = useState(false);
   const [date, setDate] = useState(''); 
   const location = useLocation();
   const navigate = useNavigate();
   const showUploadButton = location.pathname.startsWith("/collection");
+
+  const { albumName, albumLocation } = location.state || {};
 
   useEffect(() => {
     const storedUsername = localStorage.getItem("email");
@@ -45,11 +51,12 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     const token = localStorage.getItem("authToken");
-    
+
     if (files && files.length > 0 && albumId) {
+      setIsLoading(true); 
       try {
         const formData = new FormData();
-  
+
         for (const file of Array.from(files)) {
           if (file.name && file.type) { 
             const arrayBuffer = await file.arrayBuffer();
@@ -59,7 +66,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({
             console.error("File name or type is missing:", file);
           }
         }
-  
+
         const response = await axios.post(
           `https://photodrop-dawn-surf-6942.fly.dev/folders/${albumId}/images`,
           formData,
@@ -74,10 +81,12 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({
             }         
           }
         );
-  
+
         if (response.status === 200 || response.status === 201) {
-          if (onImageUpdated) onImageUpdated();
-          setShowUploadCompleteModal(true); // Показать модальное окно после успешной загрузки
+          if (onImageUpdated) {
+            onImageUpdated(); 
+          }
+          setShowUploadCompleteModal(true); 
         } else {
           console.error("Failed to upload photo:", response.statusText);
         }
@@ -90,20 +99,22 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({
         } else {
           console.error("Unexpected error:", error);
         }
+      } finally {
+        setIsLoading(false); 
       }
     } else {
       console.error("Files or albumId are missing.");
     }
   };
-  
-  const handleShowModal = () => setShowModal(true); 
-  const handleCloseModal = () => setShowModal(false); 
+
+  const handleShowModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
 
   const handleSaveModal = (picker: string, date: string) => {
     setDataPicker(picker);
     setDate(date);
-   
-    document.getElementById("file-input")?.click(); 
+
+    document.getElementById("file-input")?.click();
   };
 
   const handleClick = () => {
@@ -112,14 +123,13 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({
     if (!token) {
       navigate("/");
     } else {
-      console.log("Token is valid, navigating to home.");
       navigate("/home");
     }
   };
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
-    localStorage.removeItem("email"); 
+    localStorage.removeItem("email");
     navigate("/");
   };
 
@@ -131,6 +141,18 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({
             <CustomBrand>Photographer</CustomBrand>
           </BrandWrapper>
           <CollapseWrapper>
+            <Wrap>
+              {albumName && albumLocation && (
+                <AlbumInfo>{albumName} - {albumLocation}</AlbumInfo>
+              )}
+              {isLoading && (
+                <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                  <Spinner animation="border" role="status" style={{ color: 'orange' }}>
+                    <span className="visually-hidden">Loading...</span>
+                  </Spinner>
+                </div>
+              )}
+            </Wrap>
             {showUploadButton && (
               <>
                 <DownloadButton as="label" onClick={handleShowModal}>
@@ -157,14 +179,13 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({
           </CollapseWrapper>
         </ContainerWrapper>
       </Container>
-      <UploadPhotosModal 
-        show={showModal} 
-        handleClose={handleCloseModal} 
-        handleSave={handleSaveModal} 
-        disableSaveButton={false} 
+      <UploadPhotosModal
+        show={showModal}
+        handleClose={handleCloseModal}
+        handleSave={handleSaveModal}
+        disableSaveButton={false}
       />
 
-      {/* Модальное окно для уведомления о завершении загрузки */}
       <Modal
         show={showUploadCompleteModal}
         onHide={() => setShowUploadCompleteModal(false)}

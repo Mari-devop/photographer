@@ -13,8 +13,11 @@ export const LoginContainer = styled.div`
 export const StyledRow = styled(Row)`
   width: 100%;
   max-width: 300px; 
- 
   border-radius: 10px;
+
+  &:nth-child(2) {
+    margin-top: 20px;
+  }
 `;
 
 export const StyledInputGroup = styled(InputGroup)`

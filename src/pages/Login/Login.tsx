@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
 import { LoginContainer, StyledRow, StyledInputGroup, StyledFormControl, Button } from './Login.styled';
+import { BrandWrapper, CustomBrand } from '../../components/Navbar/Navbar.styled';
 
 type LoginProps = {
   setIsAuthenticated: (isAuthenticated: boolean) => void;
@@ -53,6 +54,9 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
 
   return (
     <LoginContainer>
+        <BrandWrapper>
+            <CustomBrand>Photographer</CustomBrand>
+        </BrandWrapper>
       <StyledRow>
         <StyledInputGroup className="mb-3">
           <InputGroup.Text id="basic-addon1">@</InputGroup.Text>
