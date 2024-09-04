@@ -4,7 +4,7 @@ import Container from "react-bootstrap/Container";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import { Spinner } from 'react-bootstrap';
+import ProgressBar from 'react-bootstrap/ProgressBar'; // Import ProgressBar from react-bootstrap
 import {
   NavbarContainer,
   ContainerWrapper,
@@ -33,7 +33,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({
   const [showModal, setShowModal] = useState(false); 
   const [showUploadCompleteModal, setShowUploadCompleteModal] = useState(false); 
   const [dataPicker, setDataPicker] = useState(''); 
-  const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0); 
   const [date, setDate] = useState(''); 
   const location = useLocation();
   const navigate = useNavigate();
@@ -51,61 +51,68 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     const token = localStorage.getItem("authToken");
-
+  
     if (files && files.length > 0 && albumId) {
-      setIsLoading(true); 
+      setProgress(10); 
       try {
         const formData = new FormData();
-
+  
         for (const file of Array.from(files)) {
-          if (file.name && file.type) { 
+          if (file.name && file.type) {
             const arrayBuffer = await file.arrayBuffer();
             const blob = new Blob([arrayBuffer], { type: file.type });
-            formData.append("images", blob, file.name); 
+            formData.append("images", blob, file.name);
           } else {
             console.error("File name or type is missing:", file);
           }
         }
-
+  
         const response = await axios.post(
           `https://photodrop-dawn-surf-6942.fly.dev/folders/${albumId}/images`,
           formData,
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              "Content-Type": "multipart/form-data", 
+              "Content-Type": "multipart/form-data",
+            },
+            onUploadProgress: (progressEvent) => {
+              if (progressEvent.total) {
+                const percentage = Math.round(
+                  (progressEvent.loaded * 100) / progressEvent.total
+                );
+                setProgress(percentage); 
+              }
             },
             params: {
               date: date,
-              dataPicker: dataPicker
-            }         
+              dataPicker: dataPicker,
+            },
           }
         );
-
+  
         if (response.status === 200 || response.status === 201) {
           if (onImageUpdated) {
-            onImageUpdated(); 
+            onImageUpdated();
           }
-          setShowUploadCompleteModal(true); 
+          setShowUploadCompleteModal(true);
         } else {
           console.error("Failed to upload photo:", response.statusText);
         }
       } catch (error) {
         if (axios.isAxiosError(error)) {
-          console.error(
-            "Error uploading photos:",
-            error.response?.data || error.message
-          );
+          console.error("Error uploading photos:", error.response?.data || error.message);
         } else {
           console.error("Unexpected error:", error);
         }
       } finally {
-        setIsLoading(false); 
+        setProgress(100); 
+        setTimeout(() => setProgress(0), 1000); 
       }
     } else {
       console.error("Files or albumId are missing.");
     }
   };
+  
 
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
@@ -145,13 +152,21 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({
               {albumName && albumLocation && (
                 <AlbumInfo>{albumName} - {albumLocation}</AlbumInfo>
               )}
-              {isLoading && (
-                <div style={{ textAlign: 'center', marginTop: '20px' }}>
-                  <Spinner animation="border" role="status" style={{ color: 'orange' }}>
-                    <span className="visually-hidden">Loading...</span>
-                  </Spinner>
+              {
+              progress > 0 && (
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  
+                  <div style={{ width: '200px' }}>
+                    <ProgressBar
+                      now={progress}
+                      label={`${progress}%`}
+                      variant="warning" 
+                      style={{ height: '16px' }} 
+                    />
+                  </div>
                 </div>
-              )}
+              )
+            }
             </Wrap>
             {showUploadButton && (
               <>

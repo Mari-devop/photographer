@@ -38,8 +38,6 @@ export const BrandWrapper = styled.div`
 
 export const CustomBrand = styled(BootstrapNavbar.Brand)`
   color: var(--primary-color);
-  -webkit-box-shadow: 0px 0px 105px 45px rgba(255,106,0,0.9);
-  -moz-box-shadow: 0px 0px 105px 45px rgba(255,106,0,0.9);
   box-shadow: 0px 0px 105px 45px rgba(255,106,0,0.9);
   border-radius: 10px;
   padding: 10px;
@@ -79,8 +77,6 @@ export const CustomNavDropdown = styled(NavDropdown)`
 
   &:hover {
     color: var(--primary-color) !important;
-    -webkit-box-shadow: 0px 0px 105px 45px rgba(255,106,0,0.9);
-    -moz-box-shadow: 0px 0px 105px 45px rgba(255,106,0,0.9);
     box-shadow: 0px 0px 105px 45px rgba(255,106,0,0.9);
     border-radius: 10px;
     border: 1px solid rgba(255,106,0,0.9);
@@ -180,8 +176,6 @@ export const AlbumInfo = styled.div`
   font-size: 18px;
   color: var(--primary-color);
   text-align: center;
-  margin-right: auto;
-  margin-left: auto;
 
    @media (max-width: 761px) {
       margin: 0 auto;
@@ -190,8 +184,18 @@ export const AlbumInfo = styled.div`
 
 export const Wrap = styled.div`
   display: flex;
-  align-items: center;  
+  align-items: center;
   justify-content: center;
-  margin: 0 auto;
+  width: 100%; 
+  max-width: 400px; 
   gap: 10px;
+  margin: 0 auto;
+`;
+
+export const SpinnerContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; 
+  margin-left: 10px; 
 `;
