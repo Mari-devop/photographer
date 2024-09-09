@@ -36,6 +36,7 @@ const CustomModal = ({ show, handleClose, handleSave, disableSaveButton }: Custo
     }
   }, [show]);
 
+
   return (
     <div>
       <Modal show={show} onHide={handleClose}>

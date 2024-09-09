@@ -5,8 +5,8 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { AlbumContainer, CardContainer, Header, Title, Text, IconWrapper, CardBody } from './Album.styled';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import PersonIcon from '@mui/icons-material/Person';
 import { PiFolderOpenThin } from "react-icons/pi";
+import { LinkStyled } from '../../pages/Home/Home.styled';
 
 export type AlbumProps = {
   id: number;
@@ -19,11 +19,16 @@ const Album = ({ id, albumName, albumLocation, onDelete }: AlbumProps) => {
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
 
+
   const handleNavigate = () => {
     navigate(`/collection/${id}`);
   };
 
-  const handleShow = () => setShow(true);
+
+  const handleShow = () => {
+    setShow(true);
+  };
+
   const handleClose = () => setShow(false);
 
   const handleConfirmDelete = () => {
@@ -31,11 +36,17 @@ const Album = ({ id, albumName, albumLocation, onDelete }: AlbumProps) => {
     setShow(false);
   };
 
+
   return (
     <AlbumContainer>
       <IconWrapper className="icon-wrapper">
-        <FaLink onClick={handleNavigate} style={{ cursor: 'pointer', color: 'white', width: '30px', height: '30px' }} />
-        <FaTrash onClick={handleShow} style={{ cursor: 'pointer', color: 'white', width: '30px', height: '30px' }} />
+        <LinkStyled to={`/collection/${id}`}>
+          <FaLink style={{ cursor: 'pointer', color: 'white', width: '30px', height: '30px' }} />
+        </LinkStyled>
+        <FaTrash 
+          onClick={handleShow} 
+          style={{ cursor: 'pointer', color: 'white', width: '30px', height: '30px' }} 
+        />
       </IconWrapper>
       <CardContainer>
         <Header>
