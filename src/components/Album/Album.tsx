@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FaTrash, FaLink } from 'react-icons/fa';
+import { Link } from 'react-router-dom'; // Import the standard Link from react-router-dom
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { AlbumContainer, CardContainer, Header, Title, Text, IconWrapper, CardBody } from './Album.styled';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { PiFolderOpenThin } from "react-icons/pi";
-import { LinkStyled } from '../../pages/Home/Home.styled';
+import { FolderSymlink, Trash } from 'lucide-react';
 
 export type AlbumProps = {
   id: number;
@@ -16,14 +15,7 @@ export type AlbumProps = {
 };
 
 const Album = ({ id, albumName, albumLocation, onDelete }: AlbumProps) => {
-  const navigate = useNavigate();
   const [show, setShow] = useState(false);
-
-
-  const handleNavigate = () => {
-    navigate(`/collection/${id}`);
-  };
-
 
   const handleShow = () => {
     setShow(true);
@@ -36,14 +28,17 @@ const Album = ({ id, albumName, albumLocation, onDelete }: AlbumProps) => {
     setShow(false);
   };
 
-
   return (
     <AlbumContainer>
       <IconWrapper className="icon-wrapper">
-        <LinkStyled to={`/collection/${id}`}>
-          <FaLink style={{ cursor: 'pointer', color: 'white', width: '30px', height: '30px' }} />
-        </LinkStyled>
-        <FaTrash 
+        <Link
+          to={`/collection/${id}`}
+          state={{ albumName, albumLocation }} 
+          style={{ textDecoration: 'none', color: 'inherit' }} 
+        >
+          <FolderSymlink style={{ cursor: 'pointer', color: 'white', width: '30px', height: '30px' }} />
+        </Link>
+        <Trash 
           onClick={handleShow} 
           style={{ cursor: 'pointer', color: 'white', width: '30px', height: '30px' }} 
         />

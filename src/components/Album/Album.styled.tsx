@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-
+import { Link } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
 
 export const AlbumContainer = styled.div`
@@ -7,30 +7,29 @@ export const AlbumContainer = styled.div`
   background-color: transparent;
   border: 1px solid var(--primary-color);
   border-radius: 20px;
-  cursor: pointer;
   min-width: 300px;
   overflow: hidden;
 
-  &:hover::before {
-    opacity: 1;
-  }
+    &:hover::before {
+      opacity: 1;
+    }
 
-  &:hover .icon-wrapper {
-    opacity: 1;
-    pointer-events: all;
-  }
+    &:hover .icon-wrapper {
+      opacity: 1;
+      pointer-events: all;
+    }
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255,106,0,1); 
-    opacity: 0;
-    z-index: 2; 
-  }
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255,106,0,1); 
+      opacity: 0;
+      z-index: 2; 
+    }
 `;
 
 export const IconWrapper = styled.div`
@@ -82,4 +81,14 @@ export const Text = styled(Card.Text)`
   flex: 1;
   gap: 5px;
   min-width: 0; 
+`;
+
+export const LinkStyled = styled(Link)`
+  text-decoration: none;
+  color: var(--primary-color);
+  cursor: none;
+
+  &:hover {
+    text-decoration: none;
+  }
 `;

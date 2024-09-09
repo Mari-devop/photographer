@@ -29,13 +29,19 @@ const CustomModal = ({ show, handleClose, handleSave, disableSaveButton }: Custo
     }
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      event.preventDefault(); 
+      handleSaveClick();
+    }
+  };
+
   useEffect(() => {
     if (show) {
       setAlbumName(''); 
       setAlbumLocation('');
     }
   }, [show]);
-
 
   return (
     <div>
@@ -53,6 +59,7 @@ const CustomModal = ({ show, handleClose, handleSave, disableSaveButton }: Custo
                 onChange={(e) => setAlbumName(e.target.value)}
                 placeholder="Magic in Paris"
                 autoFocus
+                onKeyDown={handleKeyDown}
               />
             </Form.Group>
             <Form.Group className="mb-3">
@@ -62,6 +69,7 @@ const CustomModal = ({ show, handleClose, handleSave, disableSaveButton }: Custo
                 value={albumLocation}
                 onChange={(e) => setAlbumLocation(e.target.value)}
                 placeholder="Notre Dame De Paris"
+                onKeyDown={handleKeyDown}
               />
             </Form.Group>
           </Form>

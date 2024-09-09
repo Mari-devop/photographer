@@ -57,36 +57,6 @@ const Home = () => {
     }
   }, [authToken, refreshToken, isFetched]); 
 
-  const handleSaveAlbum = async (albumDetails: AlbumDetails) => {
-    try {
-      const token = localStorage.getItem('authToken');
-      const response = await axios.post(
-        'https://photodrop-dawn-surf-6942.fly.dev/folders',
-        {
-          name: albumDetails.albumName,
-          location: albumDetails.albumLocation,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      const newAlbum = {
-        id: response.data.id,
-        albumName: response.data.name,
-        albumLocation: response.data.location,
-      };
-
-      setAlbums((prevAlbums) => [...prevAlbums, newAlbum]);
-    
-    } catch (error) {
-      console.error('Error saving album:', error);
-    }
-  };
-
   const handleDeleteAlbum = async (id: number) => {
     try {
       const token = localStorage.getItem('authToken');
@@ -101,7 +71,10 @@ const Home = () => {
       console.error('Error deleting album:', error);
     }
   };
-  
+
+  const handleSaveAlbum = (newAlbum: AlbumDetails) => {
+    setAlbums((prevAlbums) => [...prevAlbums, newAlbum]);
+  };
 
   return (
     <div>
@@ -113,14 +86,12 @@ const Home = () => {
           </Col>
           {albums.map((album, index) => (
             <Col key={index} xs={12} sm={11} md={6} lg={4} xl={4}>
-             
               <Album
                 id={album.id} 
                 albumName={album.albumName}
                 albumLocation={album.albumLocation}
                 onDelete={() => handleDeleteAlbum(album.id)}
               />
-             
             </Col>
           ))}
         </Row>

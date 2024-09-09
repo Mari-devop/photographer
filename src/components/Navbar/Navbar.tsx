@@ -4,7 +4,7 @@ import Container from "react-bootstrap/Container";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import ProgressBar from 'react-bootstrap/ProgressBar'; // Import ProgressBar from react-bootstrap
+import CenteredProgressBar from '../ProgressBar/ProgressBar';
 import {
   NavbarContainer,
   ContainerWrapper,
@@ -17,13 +17,14 @@ import {
   AlbumInfo,
   Wrap
 } from "./Navbar.styled";
-import axios from "axios";
+import axios, { CancelTokenSource } from "axios";
 import UploadPhotosModal from '../UploadPhotosModal/UploadPhotosModal'; 
+import { CircleX } from 'lucide-react';
 
 interface CustomNavbarProps {
   albumId?: string;
   onImageUpdated?: () => void;
-}
+};
 
 const CustomNavbar: React.FC<CustomNavbarProps> = ({
   albumId,
@@ -34,6 +35,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({
   const [showUploadCompleteModal, setShowUploadCompleteModal] = useState(false); 
   const [dataPicker, setDataPicker] = useState(''); 
   const [progress, setProgress] = useState(0); 
+  const [cancelSource, setCancelSource] = useState<CancelTokenSource | null>(null);
   const [date, setDate] = useState(''); 
   const location = useLocation();
   const navigate = useNavigate();
@@ -54,6 +56,8 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({
   
     if (files && files.length > 0 && albumId) {
       setProgress(10); 
+      const source = axios.CancelToken.source();
+      setCancelSource(source);
       try {
         const formData = new FormData();
   
@@ -75,6 +79,7 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({
               Authorization: `Bearer ${token}`,
               "Content-Type": "multipart/form-data",
             },
+            cancelToken: source.token,
             onUploadProgress: (progressEvent) => {
               if (progressEvent.total) {
                 const percentage = Math.round(
@@ -112,8 +117,14 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({
       console.error("Files or albumId are missing.");
     }
   };
-  
 
+  const cancelUpload = () => {
+    if (cancelSource) {
+      cancelSource.cancel("Upload canceled by the user");
+      setProgress(0); 
+    }
+  };
+  
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
 
@@ -154,16 +165,14 @@ const CustomNavbar: React.FC<CustomNavbarProps> = ({
               )}
               {
               progress > 0 && (
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <div style={{ width: '200px' }}>
-                    <ProgressBar
-                      now={progress}
-                      label={`${progress}%`}
-                      variant="warning" 
-                      style={{ height: '16px' }} 
-                    />
+                    <CenteredProgressBar progress={progress} />
                   </div>
+                  <CircleX 
+                    style={{ cursor: 'pointer', color: '#dc3545', width: '30px', height: '30px' }}
+                    onClick={cancelUpload}
+                  />
                 </div>
               )
             }
